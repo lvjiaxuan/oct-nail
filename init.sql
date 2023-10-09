@@ -1,0 +1,25 @@
+CREATE DATABASE IF NOT EXISTS oct_nail DEFAULT CHARACTER SET utf8mb4;
+
+CREATE TABLE IF NOT EXISTS oct_nail.user (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '主键',
+  -- 用户信息
+  username VARCHAR(32) UNIQUE COMMENT '用户名',
+  remark VARCHAR(255) COMMENT '备注',
+  -- 微信信息
+  nickname VARCHAR(32) COMMENT '微信昵称',
+  phone CHAR(11) COMMENT '手机号',
+  gender CHAR(1) DEFAULT 'f' COMMENT '性别：f-女性；m-男性',
+  age TINYINT UNSIGNED COMMENT '年龄',
+  avatar_url VARCHAR(600) COMMENT '头像地址',
+  openid CHAR(11) COMMENT '微信 openid',
+  -- 通用
+  create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  is_deleted TINYINT UNSIGNED COMMENT '是否删除：0-未删除；1-已删除'
+) COMMENT '用户表';
+
+CREATE TABLE IF NOT EXISTS oct_nail.service_item (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '主键',
+  name VARCHAR(32) COMMENT '服务项目名称',
+  remark VARCHAR(255) COMMENT '备注',
+) COMMENT '服务项目表';
