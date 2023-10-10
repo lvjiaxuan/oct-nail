@@ -36,11 +36,12 @@ CREATE TABLE IF NOT EXISTS oct_nail.service_item (
   `update_time` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT `更新时间`,
   `is_deleted` TINYINT UNSIGNED COMMENT `是否删除：0-未删除、1-已删除`
 ) COMMENT `单项服务项目表`;
+
 CREATE TABLE IF NOT EXISTS oct_nail.service_item_image (
   `fk_service_item_id` INT UNSIGNED COMMENT `服务项目 id`,
-  `fk_image_id` INT UNSIGNED COMMENT `图片 id`,
-  FOREIGN KEY (`fk_service_item_id`) REFERENCES oct_nail.service_item(`id`) ON DELETE CASCADE,
-  FOREIGN KEY (`fk_image_id`) REFERENCES oct_nail.image(`id`)
+  `fk_image_url` INT UNSIGNED COMMENT `图片 id`,
+  FOREIGN KEY (`fk_service_item_id`) REFERENCES oct_nail.service_item(`id`),
+  FOREIGN KEY (`fk_image_url`) REFERENCES oct_nail.image(`url`) ON UPDATE CASCADE
 ) COMMENT `服务项目图片表`;
 
 CREATE TABLE IF NOT EXISTS oct_nail.vip_card (
