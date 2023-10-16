@@ -30,8 +30,8 @@ CREATE TABLE IF NOT EXISTS oct_nail.service_item (
   `description` VARCHAR(255) COMMENT `描述介绍`,
   `remark` VARCHAR(255) COMMENT `备注`,
   -- 通用
-  `created_by` VARCHAR(32) COMMENT `创建者`,
-  `updated_by` VARCHAR(32) COMMENT `创建者`,
+  `created_by` VARCHAR(32) COMMENT `创建人`,
+  `updated_by` VARCHAR(32) COMMENT `更新人`,
   `create_time` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT `创建时间`,
   `update_time` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT `更新时间`,
   `is_deleted` TINYINT UNSIGNED COMMENT `是否删除：0-未删除、1-已删除`
