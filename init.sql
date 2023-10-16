@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS oct_nail.service_item (
   `name` VARCHAR(32) COMMENT `服务项目名称`,
   `original_price` DECIMAL(10,2) COMMENT `原价格`,
   `discounted_price` DECIMAL(10,2) COMMENT `折扣价格`,
-  `description` VARCHAR COMMENT `描述`,
+  `description` VARCHAR(255) COMMENT `描述介绍`,
   `remark` VARCHAR(255) COMMENT `备注`,
   -- 通用
   `created_by` VARCHAR(32) COMMENT `创建者`,
