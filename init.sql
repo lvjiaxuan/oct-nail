@@ -93,6 +93,8 @@ CREATE TABLE IF NOT EXISTS oct_nail.user_order (
   `status` TINYINT UNSIGNED COMMENT `状态：0-未支付、1-已完成、2-订单信息待完善`,
   `pay_type` TINYINT UNSIGNED COMMENT `支付类型：0-其它（混合支付）、1-微信支付、2-余额卡支付、3-次卡支付`,
   `pay_time` DATETIME COMMENT `支付时间`,
+  `start_time` DATETIME COMMENT `服务开始时间`,
+  `end_time` DATETIME COMMENT `服务结束时间`,
   `user_comment` VARCHAR(255) COMMENT `用户评价`,
   `user_rate` TINYINT UNSIGNED COMMENT `用户打星：1-5`,
   `remark` VARCHAR(255) COMMENT `备注`,
