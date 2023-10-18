@@ -138,13 +138,15 @@ CREATE TABLE IF NOT EXISTS oct_nail.vip_recharge_log (
 DROP TABLE IF EXISTS oct_nail.user_order_image;
 CREATE TABLE IF NOT EXISTS oct_nail.user_order_image (
   `fk_user_order_id` INT UNSIGNED COMMENT '用户订单 id',
-  `fk_image_url` VARCHAR(600) COMMENT '图片 url'
+  `fk_image_url` VARCHAR(600) COMMENT '图片 url',
 ) COMMENT '用户订单-图片中间表';
 
 DROP TABLE IF EXISTS oct_nail.image;
 CREATE TABLE IF NOT EXISTS oct_nail.image (
   `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   `url` VARCHAR(600) UNIQUE COMMENT '图片地址',
+  `is_show` TINYINT UNSIGNED DEFAULT 0 COMMENT '是否展示到首页：0-否、1-是',
+  `show_description` VARCHAR(255) COMMENT '展示描述',
   -- 通用
   `created_by` VARCHAR(32) COMMENT '创建人',
   `updated_by` VARCHAR(32) COMMENT '更新人',
