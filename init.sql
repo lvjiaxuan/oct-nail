@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS oct_nail.vip_balance_card (
   `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   `description` VARCHAR(255) COMMENT '描述',
   `balance` DECIMAL(10,2) DEFAULT 0 COMMENT '余额',
-  CHECK (balance >= 0),
+  CHECK (`balance` >= 0),
   -- 通用
   `created_by` VARCHAR(32) COMMENT '创建人',
   `updated_by` VARCHAR(32) COMMENT '更新人',
@@ -66,7 +66,7 @@ CREATE TABLE IF NOT EXISTS oct_nail.vip_times_card (
   `fk_service_item_id` INT UNSIGNED NOT NULL COMMENT '服务项 id',
   `description` VARCHAR(255) COMMENT '描述',
   `times` TINYINT UNSIGNED DEFAULT 0 COMMENT '总次数',
-  CHECK (times >= 0),
+  CHECK (`times` >= 0),
   -- 通用
   `created_by` VARCHAR(32) COMMENT '创建人',
   `updated_by` VARCHAR(32) COMMENT '更新人',
@@ -85,11 +85,8 @@ CREATE TABLE IF NOT EXISTS oct_nail.user_vip_card (
   -- 次卡
   `fk_vip_times_card_id` INT UNSIGNED COMMENT '会员次卡 id',
   `left_times` INT UNSIGNED COMMENT '次卡剩余次数',
-  CHECK (left_times >= 0),
-  FOREIGN KEY (`fk_user_id`) REFERENCES oct_nail.user(`id`),
-  FOREIGN Key (`fk_vip_balance_card_id`) REFERENCES oct_nail.vip_balance_card(`id`),
-  FOREIGN Key (`fk_vip_times_card_id`) REFERENCES oct_nail.vip_times_card(`id`)
-) COMMENT '用户-会员卡中间表';
+  CHECK (`left_times` >= 0),
+) COMMENT '用户- vip 卡中间表';
 
 DROP TABLE IF EXISTS oct_nail.user_order;
 CREATE TABLE IF NOT EXISTS oct_nail.user_order (
@@ -122,6 +119,22 @@ CREATE TABLE IF NOT EXISTS oct_nail.user_order_vip (
   `pay_times` INT UNSIGNED COMMENT '次卡划扣次数'
 ) COMMENT '用户订单- vip 卡中间表';
 
+DROP TABLE IF EXISTS oct_nail.vip_recharge_log;
+CREATE TABLE IF NOT EXISTS oct_nail.vip_recharge_log (
+  `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `fk_user_vip_card_id` INT UNSIGNED COMMENT '用户 vip 卡 id',
+  `recharge_balance` DECIMAL(10,2) DEFAULT 0 COMMENT '充值金额',
+  `recharge_times` DECIMAL(10,2) DEFAULT 0 COMMENT '充值次数',
+  `pay_amount` DECIMAL(10,2) DEFAULT 0 COMMENT '支付金额',
+  CHECK (`recharge_balance` > 0 AND `recharge_times` > 0 AND `pay_amount` > 0),
+  -- 通用
+  `created_by` VARCHAR(32) COMMENT '创建人',
+  `updated_by` VARCHAR(32) COMMENT '更新人',
+  `create_time` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `is_deleted` TINYINT UNSIGNED COMMENT '是否删除：0-未删除、1-已删'
+) COMMENT 'vip 卡充值记录表';
+
 DROP TABLE IF EXISTS oct_nail.user_order_image;
 CREATE TABLE IF NOT EXISTS oct_nail.user_order_image (
   `fk_user_order_id` INT UNSIGNED COMMENT '用户订单 id',
@@ -153,4 +166,8 @@ ALTER TABLE oct_nail.user_order ADD FOREIGN KEY (`fk_service_item_id`) REFERENCE
 ALTER TABLE oct_nail.user_order_vip ADD FOREIGN KEY (`fk_vip_balance_card_id`) REFERENCES oct_nail.vip_balance_card(`id`);
 ALTER TABLE oct_nail.user_order_vip ADD FOREIGN KEY (`fk_vip_times_card_id`) REFERENCES oct_nail.vip_times_card(`id`);
 ALTER TABLE oct_nail.user_order_image ADD FOREIGN KEY (`fk_user_order_id`) REFERENCES oct_nail.service_item(`id`);
-ALTER TABLE oct_nail.user_order_image ADD  FOREIGN KEY (`fk_image_url`) REFERENCES oct_nail.image(`url`) ON UPDATE CASCADE;
+ALTER TABLE oct_nail.user_order_image ADD FOREIGN KEY (`fk_image_url`) REFERENCES oct_nail.image(`url`) ON UPDATE CASCADE;
+ALTER TABLE oct_nail.vip_recharge_log ADD FOREIGN KEY (`fk_user_vip_card_id`) REFERENCES oct_nail.user_vip_card(`id`);
+ALTER TABLE oct_nail.user_vip_card ADD FOREIGN KEY (`fk_user_id`) REFERENCES oct_nail.user(`id`);
+ALTER TABLE oct_nail.user_vip_card ADD FOREIGN Key (`fk_vip_balance_card_id`) REFERENCES oct_nail.vip_balance_card(`id`);
+ALTER TABLE oct_nail.user_vip_card ADD FOREIGN Key (`fk_vip_times_card_id`) REFERENCES oct_nail.vip_times_card(`id`);
