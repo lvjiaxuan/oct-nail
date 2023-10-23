@@ -4,11 +4,9 @@ export default [
   ...lvjiaxuan.configs.recommended,
 
   {
-    files: ['test/**/*.ts'],
-    languageOptions: {
-      parserOptions: {
-        project: './tsconfig.json',
-      },
-    },
-  }
+    files: [ 'test/**/*.ts' ],
+    languageOptions: { parserOptions: { project: './tsconfig.json' } },
+  },
+
+  { rules: { '@typescript-eslint/consistent-type-definitions': 'off' } },
 ]
