@@ -15,7 +15,9 @@
     "watch:ts": "tsc -w",
     "dev": "npm run build:ts && concurrently -k -p \"[{name}]\" -n \"TypeScript,App\" -c \"yellow.bold,cyan.bold\" \"npm:watch:ts\" \"npm:dev:start\"",
     "dev:start": "fastify start --ignore-watch=.ts$ -w -l info -P dist/app.js",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "prisma:introspect ": "prisma db pull",
+    "prisma:generate": "prisma generate"
   },
   "dependencies": {
     "@fastify/autoload": "^5.8.0",

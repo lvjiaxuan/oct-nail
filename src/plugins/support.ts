@@ -1,5 +1,4 @@
 import fp from 'fastify-plugin'
-import { PrismaClient } from '@prisma/client'
 
 export interface SupportPluginOptions {
   // Specify Support plugin options here

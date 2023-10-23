@@ -1,9 +1,10 @@
-// import { FastifyPluginAsync } from "fastify"
+import { FastifyPluginAsync } from 'fastify'
 
-const example: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
-  fastify.get('/', async function (request, reply) {
+const Users: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
+  fastify.get('/getUsersPage', async function (request, reply) {
+    // fastify.prisma.$queryRaw
     return 'this is an example'
   })
 }
 
-export default example
+export default Users
