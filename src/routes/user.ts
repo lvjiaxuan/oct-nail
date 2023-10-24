@@ -1,13 +1,21 @@
 import * as defaults from '~/defaults.js'
-import type { FastifyPlugin } from 'fastify'
+import type { FastifyPluginAsync } from 'fastify'
 
-const Users: FastifyPlugin = async (fastify, opts): Promise<void> => {
+const Users: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
+
   fastify.get<{
-    Querystring: QueryPagination
-  }>('/getUsersPage', async function (request, reply) {
+    Querystring: QueryPagination & ParseSchemaQuery<typeof fastify.prisma.user.fields>
+  }>('/getUserListPage', async function (request, reply) {
     const queryParams = defaults.queryPaginationDefaults
 
-    await fastify.prisma.$queryRaw`select * FROM user LIMIT ${ queryParams.size }, ${ (queryParams.page - 1) * queryParams.size }`
+    const sqlData = await Promise.all([
+      fastify.prisma.$queryRaw`select * FROM u9ser LIMIT ${ queryParams.size }, ${ (queryParams.page - 1) * queryParams.size }`,
+      fastify.prisma.$queryRaw`select COUNT(*) FROM user `,
+    ])
+
+    console.log(1, sqlData[0])
+    console.log(2, sqlData[1])
+
     return 'this is an example'
   })
 }
