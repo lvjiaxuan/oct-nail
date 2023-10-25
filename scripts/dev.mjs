@@ -4,7 +4,9 @@ let isTSCReady = false
 let isTscAliasReady = false
 let isFastifyStart = false
 
-exec('nr watch:ts').stdout
+const w = exec('nr watch:ts')
+
+w.stdout
   .on('data', msg => {
 
     if (isFastifyStart) {
@@ -23,8 +25,10 @@ exec('nr watch:ts').stdout
 
     if (!isFastifyStart && isTSCReady && isTscAliasReady) {
       isFastifyStart = true
-      exec('nr dev:start').stdout
-        .on('data', _msg => console.log(_msg))
-        .on('error', _err => console.error(_err))
+      const f = exec('nr dev:start')
+      f.stdout.on('data', _msg => console.log(_msg))
+      f.stderr.on('data', _msg => console.error(_msg))
     }
-  }).on('error', err => console.error(err))
+  })
+
+w.stderr.on('data', _msg => console.error(_msg))
