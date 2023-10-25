@@ -9,7 +9,7 @@ const Users: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
     const queryParams = defaults.queryPaginationDefaults
 
     const sqlData = await Promise.all([
-      fastify.prisma.$queryRaw`select * FROM u9ser LIMIT ${ queryParams.size }, ${ (queryParams.page - 1) * queryParams.size }`,
+      fastify.prisma.$queryRaw`select * FROM user LIMIT ${ queryParams.size }, ${ (queryParams.page - 1) * queryParams.size }`,
       fastify.prisma.$queryRaw`select COUNT(*) FROM user `,
     ])
 
