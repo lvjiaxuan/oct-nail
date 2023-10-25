@@ -1,12 +1,14 @@
 import lvjiaxuan from '@lvjiaxuan/eslint-plugin/flat'
 
 export default [
+  { ignores: [ 'test/**' ] },
+
   ...lvjiaxuan.configs.recommended,
 
   {
-    files: [ 'test/**/*.ts' ],
-    languageOptions: { parserOptions: { project: './tsconfig.json' } },
+    rules: {
+      '@typescript-eslint/consistent-type-definitions': 'off',
+      '@typescript-eslint/require-await': 'off',
+    },
   },
-
-  { rules: { '@typescript-eslint/consistent-type-definitions': 'off' } },
 ]

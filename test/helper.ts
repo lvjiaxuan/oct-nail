@@ -1,11 +1,11 @@
 // This file contains code that we reuse between our tests.
 import helper from 'fastify-cli/helper.js'
 import path from 'path'
-import tap from 'tap';
+import tap from 'tap'
 import { fileURLToPath } from 'url'
 
 
-export type Test = typeof tap['Test']['prototype'];
+export type Test = typeof tap['Test']['prototype']
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -20,7 +20,7 @@ async function config () {
 // Automatically build and tear down our instance
 async function build (t: Test) {
   // you can set all the options supported by the fastify CLI command
-  const argv = [AppPath]
+  const argv = [ AppPath ]
 
   // fastify-plugin ensures that all decorators
   // are exposed for testing purposes, this is
@@ -35,5 +35,5 @@ async function build (t: Test) {
 
 export {
   config,
-  build
+  build,
 }
