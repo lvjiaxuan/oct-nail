@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS oct_nail.service_item (
 DROP TABLE IF EXISTS oct_nail.service_item_image;
 CREATE TABLE IF NOT EXISTS oct_nail.service_item_image (
   `fk_service_item_id` INT UNSIGNED NOT NULL COMMENT '服务项目 id',
-  `fk_image_url` VARCHAR(600) NOT NULL COMMENT '图片 url'
+  `fk_image_url` VARCHAR(600) UNIQUE NOT NULL COMMENT '图片 url'
 ) COMMENT '服务项目-图片中间表';
 
 DROP TABLE IF EXISTS oct_nail.vip_balance_card;
@@ -85,7 +85,7 @@ CREATE TABLE IF NOT EXISTS oct_nail.user_vip_card (
   -- 次卡
   `fk_vip_times_card_id` INT UNSIGNED COMMENT '会员次卡 id',
   `left_times` INT UNSIGNED COMMENT '次卡剩余次数',
-  CHECK (`left_times` >= 0),
+  CHECK (`left_times` >= 0)
 ) COMMENT '用户- vip 卡中间表';
 
 DROP TABLE IF EXISTS oct_nail.user_order;
@@ -111,7 +111,7 @@ CREATE TABLE IF NOT EXISTS oct_nail.user_order (
 
 DROP TABLE IF EXISTS oct_nail.user_order_vip;
 CREATE TABLE IF NOT EXISTS oct_nail.user_order_vip (
-  `fk_user_order_id` INT COMMENT '用户订单 id',
+  `fk_user_order_id` INT COMMENT '用户订单 id' PRIMARY KEY,
   -- 余额卡
   `fk_vip_balance_card_id` INT UNSIGNED COMMENT '支付 vip 卡 id',
   `pay_amount` DECIMAL(10,2) DEFAULT 0 COMMENT '支付金额',
@@ -138,7 +138,7 @@ CREATE TABLE IF NOT EXISTS oct_nail.vip_recharge_log (
 DROP TABLE IF EXISTS oct_nail.user_order_image;
 CREATE TABLE IF NOT EXISTS oct_nail.user_order_image (
   `fk_user_order_id` INT UNSIGNED COMMENT '用户订单 id',
-  `fk_image_url` VARCHAR(600) COMMENT '图片 url',
+  `fk_image_url` VARCHAR(600) UNIQUE COMMENT '图片 url'
 ) COMMENT '用户订单-图片中间表';
 
 DROP TABLE IF EXISTS oct_nail.image;

@@ -8,196 +8,206 @@ datasource db {
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model image {
-  id                 Int                  @id @default(autoincrement()) @db.UnsignedInt
-  url                String?              @unique(map: "url") @db.VarChar(600)
-  created_by         String?              @db.VarChar(32)
-  updated_by         String?              @db.VarChar(32)
-  create_time        DateTime?            @default(now()) @db.DateTime(0)
-  update_time        DateTime?            @default(now()) @db.DateTime(0)
-  is_deleted         Int?                 @db.UnsignedTinyInt
-  service_item_image service_item_image[] @ignore
-  user_order_image   user_order_image[]   @ignore
+model Image {
+  id               Int               @id @default(autoincrement()) @db.UnsignedInt
+  url              String?           @unique(map: "url") @db.VarChar(600)
+  isShow           Int?              @default(0) @map("is_show") @db.UnsignedTinyInt
+  showDescription  String?           @map("show_description") @db.VarChar(255)
+  createdBy        String?           @map("created_by") @db.VarChar(32)
+  updatedBy        String?           @map("updated_by") @db.VarChar(32)
+  createTime       DateTime?         @default(now()) @map("create_time") @db.DateTime(0)
+  updateTime       DateTime?         @default(now()) @map("update_time") @db.DateTime(0)
+  isDeleted        Int?              @map("is_deleted") @db.UnsignedTinyInt
+  serviceItemImage ServiceItemImage?
+  userOrderImage   UserOrderImage?   @ignore
+
+  @@map("image")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model service_item {
-  id                 Int                  @id @default(autoincrement()) @db.UnsignedInt
-  name               String               @db.VarChar(32)
-  original_price     Decimal?             @db.Decimal(10, 2)
-  discounted_price   Decimal?             @db.Decimal(10, 2)
-  description        String?              @db.VarChar(255)
-  remark             String?              @db.VarChar(255)
-  created_by         String?              @db.VarChar(32)
-  updated_by         String?              @db.VarChar(32)
-  create_time        DateTime?            @default(now()) @db.DateTime(0)
-  update_time        DateTime?            @default(now()) @db.DateTime(0)
-  is_deleted         Int?                 @db.UnsignedTinyInt
-  service_item_image service_item_image[] @ignore
-  user_order         user_order[]
-  user_order_image   user_order_image[]   @ignore
-  vip_times_card     vip_times_card[]
-}
+model ServiceItem {
+  id               Int                @id @default(autoincrement()) @db.UnsignedInt
+  name             String             @db.VarChar(32)
+  originalPrice    Decimal?           @map("original_price") @db.Decimal(10, 2)
+  discountedPrice  Decimal?           @map("discounted_price") @db.Decimal(10, 2)
+  description      String?            @db.VarChar(255)
+  remark           String?            @db.VarChar(255)
+  createdBy        String?            @map("created_by") @db.VarChar(32)
+  updatedBy        String?            @map("updated_by") @db.VarChar(32)
+  createTime       DateTime?          @default(now()) @map("create_time") @db.DateTime(0)
+  updateTime       DateTime?          @default(now()) @map("update_time") @db.DateTime(0)
+  isDeleted        Int?               @map("is_deleted") @db.UnsignedTinyInt
+  serviceItemImage ServiceItemImage[]
+  userOrder        UserOrder[]
+  userOrderImage   UserOrderImage[]   @ignore
+  vipTimesCard     VipTimesCard[]
 
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model service_item_image {
-  fk_service_item_id Int          @db.UnsignedInt
-  fk_image_url       String       @db.VarChar(600)
-  service_item       service_item @relation(fields: [fk_service_item_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "service_item_image_ibfk_1")
-  image              image        @relation(fields: [fk_image_url], references: [url], onDelete: NoAction, map: "service_item_image_ibfk_2")
-
-  @@index([fk_image_url], map: "fk_image_url")
-  @@index([fk_service_item_id], map: "fk_service_item_id")
-  @@ignore
+  @@map("service_item")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model user {
-  id                                               Int             @id @default(autoincrement()) @db.UnsignedInt
-  fk_vip_card_id                                   Int?            @db.UnsignedInt
-  username                                         String?         @db.VarChar(32)
-  remark                                           String?         @db.VarChar(255)
-  nickname                                         String?         @db.VarChar(32)
-  phone                                            String?         @db.Char(11)
-  gender                                           String?         @default("f") @db.Char(1)
-  age                                              Int?            @db.UnsignedTinyInt
-  avatar_url                                       String?         @db.VarChar(600)
-  openid                                           String?         @db.Char(11)
-  created_by                                       String?         @db.VarChar(32)
-  updated_by                                       String?         @db.VarChar(32)
-  create_time                                      DateTime?       @default(now()) @db.DateTime(0)
-  update_time                                      DateTime?       @default(now()) @db.DateTime(0)
-  is_deleted                                       Int?            @db.UnsignedTinyInt
-  user_vip_card_user_fk_vip_card_idTouser_vip_card user_vip_card?  @relation("user_fk_vip_card_idTouser_vip_card", fields: [fk_vip_card_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_ibfk_1")
-  user_order                                       user_order[]
-  user_vip_card_user_vip_card_fk_user_idTouser     user_vip_card[] @relation("user_vip_card_fk_user_idTouser")
+model ServiceItemImage {
+  fkServiceItemId Int         @map("fk_serviceItem_id") @db.UnsignedInt
+  fkImageUrl      String      @unique(map: "fk_image_url") @map("fk_image_url") @db.VarChar(600)
+  serviceItem     ServiceItem @relation(fields: [fkServiceItemId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "serviceItem_image_ibfk_1")
+  image           Image       @relation(fields: [fkImageUrl], references: [url], onDelete: NoAction, map: "serviceItem_image_ibfk_2")
 
-  @@index([fk_vip_card_id], map: "fk_vip_card_id")
+  @@index([fkServiceItemId], map: "fkServiceItemId")
+  @@map("serviceItem_image")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model user_order {
-  id                 Int           @id @default(autoincrement()) @db.UnsignedInt
-  fk_user_id         Int           @db.UnsignedInt
-  fk_service_item_id Int?          @db.UnsignedInt
-  status             Int?          @db.UnsignedTinyInt
-  pay_type           Int?          @db.UnsignedTinyInt
-  pay_time           DateTime?     @db.DateTime(0)
-  start_time         DateTime?     @db.DateTime(0)
-  end_time           DateTime?     @db.DateTime(0)
-  user_comment       String?       @db.VarChar(255)
-  user_rate          Int?          @db.UnsignedTinyInt
-  remark             String?       @db.VarChar(255)
-  created_by         String?       @db.VarChar(32)
-  updated_by         String?       @db.VarChar(32)
-  create_time        DateTime?     @default(now()) @db.DateTime(0)
-  update_time        DateTime?     @default(now()) @db.DateTime(0)
-  is_deleted         Int?          @db.UnsignedTinyInt
-  user               user          @relation(fields: [fk_user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_order_ibfk_1")
-  service_item       service_item? @relation(fields: [fk_service_item_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_order_ibfk_2")
+model User {
+  id                                      Int           @id @default(autoincrement()) @db.UnsignedInt
+  fkVipCardId                             Int?          @map("fk_vip_card_id") @db.UnsignedInt
+  username                                String?       @db.VarChar(32)
+  remark                                  String?       @db.VarChar(255)
+  nickname                                String?       @db.VarChar(32)
+  phone                                   String?       @db.Char(11)
+  gender                                  String?       @default("f") @db.Char(1)
+  age                                     Int?          @db.UnsignedTinyInt
+  avatarUrl                               String?       @map("avatar_url") @db.VarChar(600)
+  openid                                  String?       @db.Char(11)
+  createdBy                               String?       @map("created_by") @db.VarChar(32)
+  updatedBy                               String?       @map("updated_by") @db.VarChar(32)
+  createTime                              DateTime?     @default(now()) @map("create_time") @db.DateTime(0)
+  updateTime                              DateTime?     @default(now()) @map("update_time") @db.DateTime(0)
+  isDeleted                               Int?          @map("is_deleted") @db.UnsignedTinyInt
+  userVipCardUserFkVipCardIdtouserVipCard UserVipCard?  @relation("user_fk_vip_card_idTouser_vip_card", fields: [fkVipCardId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_ibfk_1")
+  userOrder                               UserOrder[]
+  userVipCardUserVipCardFkUserIdtouser    UserVipCard[] @relation("user_vip_card_fk_user_idTouser")
 
-  @@index([fk_service_item_id], map: "fk_service_item_id")
-  @@index([fk_user_id], map: "fk_user_id")
+  @@index([fkVipCardId], map: "fkVipCardId")
+  @@map("user")
 }
 
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model user_order_image {
-  fk_user_order_id Int?          @db.UnsignedInt
-  fk_image_url     String?       @db.VarChar(600)
-  service_item     service_item? @relation(fields: [fk_user_order_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_order_image_ibfk_1")
-  image            image?        @relation(fields: [fk_image_url], references: [url], onDelete: NoAction, map: "user_order_image_ibfk_2")
+model UserOrder {
+  id              Int          @id @default(autoincrement()) @db.UnsignedInt
+  fkUserId        Int          @map("fk_user_id") @db.UnsignedInt
+  fkServiceItemId Int?         @map("fk_serviceItem_id") @db.UnsignedInt
+  status          Int?         @db.UnsignedTinyInt
+  payType         Int?         @map("pay_type") @db.UnsignedTinyInt
+  payTime         DateTime?    @map("pay_time") @db.DateTime(0)
+  startTime       DateTime?    @map("start_time") @db.DateTime(0)
+  endTime         DateTime?    @map("end_time") @db.DateTime(0)
+  userComment     String?      @map("user_comment") @db.VarChar(255)
+  userRate        Int?         @map("user_rate") @db.UnsignedTinyInt
+  remark          String?      @db.VarChar(255)
+  createdBy       String?      @map("created_by") @db.VarChar(32)
+  updatedBy       String?      @map("updated_by") @db.VarChar(32)
+  createTime      DateTime?    @default(now()) @map("create_time") @db.DateTime(0)
+  updateTime      DateTime?    @default(now()) @map("update_time") @db.DateTime(0)
+  isDeleted       Int?         @map("is_deleted") @db.UnsignedTinyInt
+  user            User         @relation(fields: [fkUserId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_order_ibfk_1")
+  serviceItem     ServiceItem? @relation(fields: [fkServiceItemId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_order_ibfk_2")
 
-  @@index([fk_image_url], map: "fk_image_url")
-  @@index([fk_user_order_id], map: "fk_user_order_id")
-  @@ignore
+  @@index([fkServiceItemId], map: "fkServiceItemId")
+  @@index([fkUserId], map: "fkUserId")
+  @@map("user_order")
 }
 
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model user_order_vip {
-  fk_user_order_id       Int?
-  fk_vip_balance_card_id Int?              @db.UnsignedInt
-  pay_amount             Decimal?          @default(0.00) @db.Decimal(10, 2)
-  fk_vip_times_card_id   Int?              @db.UnsignedInt
-  pay_times              Int?              @db.UnsignedInt
-  vip_balance_card       vip_balance_card? @relation(fields: [fk_vip_balance_card_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_order_vip_ibfk_1")
-  vip_times_card         vip_times_card?   @relation(fields: [fk_vip_times_card_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_order_vip_ibfk_2")
+model UserOrderImage {
+  fkUserOrderId Int?         @map("fk_user_order_id") @db.UnsignedInt
+  fkImageUrl    String?      @unique(map: "fk_image_url") @map("fk_image_url") @db.VarChar(600)
+  serviceItem   ServiceItem? @relation(fields: [fkUserOrderId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_order_image_ibfk_1")
+  image         Image?       @relation(fields: [fkImageUrl], references: [url], onDelete: NoAction, map: "user_order_image_ibfk_2")
 
-  @@index([fk_vip_balance_card_id], map: "fk_vip_balance_card_id")
-  @@index([fk_vip_times_card_id], map: "fk_vip_times_card_id")
+  @@index([fkUserOrderId], map: "fkUserOrderId")
+  @@map("user_order_image")
   @@ignore
 }
 
-/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model user_vip_card {
-  id                                      Int                @id @default(autoincrement()) @db.UnsignedInt
-  fk_user_id                              Int?               @db.UnsignedInt
-  fk_vip_balance_card_id                  Int?               @db.UnsignedInt
-  left_balance                            Decimal?           @default(0.00) @db.Decimal(10, 2)
-  fk_vip_times_card_id                    Int?               @db.UnsignedInt
-  left_times                              Int?               @db.UnsignedInt
-  user_user_fk_vip_card_idTouser_vip_card user[]             @relation("user_fk_vip_card_idTouser_vip_card")
-  user_user_vip_card_fk_user_idTouser     user?              @relation("user_vip_card_fk_user_idTouser", fields: [fk_user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_vip_card_ibfk_1")
-  vip_balance_card                        vip_balance_card?  @relation(fields: [fk_vip_balance_card_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_vip_card_ibfk_2")
-  vip_times_card                          vip_times_card?    @relation(fields: [fk_vip_times_card_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_vip_card_ibfk_3")
-  vip_recharge_log                        vip_recharge_log[]
+model UserOrderVip {
+  fkUserOrderId      Int             @id @map("fk_user_order_id")
+  fkVipBalanceCardId Int?            @map("fk_vipBalanceCard_id") @db.UnsignedInt
+  payAmount          Decimal?        @default(0.00) @map("pay_amount") @db.Decimal(10, 2)
+  fkVipTimesCardId   Int?            @map("fk_vipTimesCard_id") @db.UnsignedInt
+  payTimes           Int?            @map("pay_times") @db.UnsignedInt
+  vipBalanceCard     VipBalanceCard? @relation(fields: [fkVipBalanceCardId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_order_vip_ibfk_1")
+  vipTimesCard       VipTimesCard?   @relation(fields: [fkVipTimesCardId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_order_vip_ibfk_2")
 
-  @@index([fk_user_id], map: "fk_user_id")
-  @@index([fk_vip_balance_card_id], map: "fk_vip_balance_card_id")
-  @@index([fk_vip_times_card_id], map: "fk_vip_times_card_id")
+  @@index([fkVipBalanceCardId], map: "fkVipBalanceCardId")
+  @@index([fkVipTimesCardId], map: "fkVipTimesCardId")
+  @@map("user_order_vip")
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model vip_balance_card {
-  id             Int              @id @default(autoincrement()) @db.UnsignedInt
-  description    String?          @db.VarChar(255)
-  balance        Decimal?         @default(0.00) @db.Decimal(10, 2)
-  created_by     String?          @db.VarChar(32)
-  updated_by     String?          @db.VarChar(32)
-  create_time    DateTime?        @default(now()) @db.DateTime(0)
-  update_time    DateTime?        @default(now()) @db.DateTime(0)
-  is_deleted     Int?             @db.UnsignedTinyInt
-  user_order_vip user_order_vip[] @ignore
-  user_vip_card  user_vip_card[]
+model UserVipCard {
+  id                               Int              @id @default(autoincrement()) @db.UnsignedInt
+  fkUserId                         Int?             @map("fk_user_id") @db.UnsignedInt
+  fkVipBalanceCardId               Int?             @map("fk_vipBalanceCard_id") @db.UnsignedInt
+  leftBalance                      Decimal?         @default(0.00) @map("left_balance") @db.Decimal(10, 2)
+  fkVipTimesCardId                 Int?             @map("fk_vipTimesCard_id") @db.UnsignedInt
+  leftTimes                        Int?             @map("left_times") @db.UnsignedInt
+  userUserFkVipCardIdtouserVipCard User[]           @relation("user_fk_vip_card_idTouser_vip_card")
+  userUserVipCardFkUserIdtouser    User?            @relation("user_vip_card_fk_user_idTouser", fields: [fkUserId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_vip_card_ibfk_1")
+  vipBalanceCard                   VipBalanceCard?  @relation(fields: [fkVipBalanceCardId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_vip_card_ibfk_2")
+  vipTimesCard                     VipTimesCard?    @relation(fields: [fkVipTimesCardId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_vip_card_ibfk_3")
+  vipRechargeLog                   VipRechargeLog[]
+
+  @@index([fkUserId], map: "fkUserId")
+  @@index([fkVipBalanceCardId], map: "fkVipBalanceCardId")
+  @@index([fkVipTimesCardId], map: "fkVipTimesCardId")
+  @@map("user_vip_card")
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model vip_recharge_log {
-  id                  Int            @id @default(autoincrement()) @db.UnsignedInt
-  fk_user_vip_card_id Int?           @db.UnsignedInt
-  recharge_balance    Decimal?       @default(0.00) @db.Decimal(10, 2)
-  recharge_times      Decimal?       @default(0.00) @db.Decimal(10, 2)
-  pay_amount          Decimal?       @default(0.00) @db.Decimal(10, 2)
-  created_by          String?        @db.VarChar(32)
-  updated_by          String?        @db.VarChar(32)
-  create_time         DateTime?      @default(now()) @db.DateTime(0)
-  update_time         DateTime?      @default(now()) @db.DateTime(0)
-  is_deleted          Int?           @db.UnsignedTinyInt
-  user_vip_card       user_vip_card? @relation(fields: [fk_user_vip_card_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "vip_recharge_log_ibfk_1")
+model VipBalanceCard {
+  id           Int            @id @default(autoincrement()) @db.UnsignedInt
+  description  String?        @db.VarChar(255)
+  balance      Decimal?       @default(0.00) @db.Decimal(10, 2)
+  createdBy    String?        @map("created_by") @db.VarChar(32)
+  updatedBy    String?        @map("updated_by") @db.VarChar(32)
+  createTime   DateTime?      @default(now()) @map("create_time") @db.DateTime(0)
+  updateTime   DateTime?      @default(now()) @map("update_time") @db.DateTime(0)
+  isDeleted    Int?           @map("is_deleted") @db.UnsignedTinyInt
+  userOrderVip UserOrderVip[]
+  userVipCard  UserVipCard[]
 
-  @@index([fk_user_vip_card_id], map: "fk_user_vip_card_id")
+  @@map("vip_balance_card")
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model vip_times_card {
-  id                 Int              @id @default(autoincrement()) @db.UnsignedInt
-  fk_service_item_id Int              @db.UnsignedInt
-  description        String?          @db.VarChar(255)
-  times              Int?             @default(0) @db.UnsignedTinyInt
-  created_by         String?          @db.VarChar(32)
-  updated_by         String?          @db.VarChar(32)
-  create_time        DateTime?        @default(now()) @db.DateTime(0)
-  update_time        DateTime?        @default(now()) @db.DateTime(0)
-  is_deleted         Int?             @db.UnsignedTinyInt
-  user_order_vip     user_order_vip[] @ignore
-  user_vip_card      user_vip_card[]
-  service_item       service_item     @relation(fields: [fk_service_item_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "vip_times_card_ibfk_1")
+model VipRechargeLog {
+  id              Int          @id @default(autoincrement()) @db.UnsignedInt
+  fkUserVipCardId Int?         @map("fk_userVipCard_id") @db.UnsignedInt
+  rechargeBalance Decimal?     @default(0.00) @map("recharge_balance") @db.Decimal(10, 2)
+  rechargeTimes   Decimal?     @default(0.00) @map("recharge_times") @db.Decimal(10, 2)
+  payAmount       Decimal?     @default(0.00) @map("pay_amount") @db.Decimal(10, 2)
+  createdBy       String?      @map("created_by") @db.VarChar(32)
+  updatedBy       String?      @map("updated_by") @db.VarChar(32)
+  createTime      DateTime?    @default(now()) @map("create_time") @db.DateTime(0)
+  updateTime      DateTime?    @default(now()) @map("update_time") @db.DateTime(0)
+  isDeleted       Int?         @map("is_deleted") @db.UnsignedTinyInt
+  userVipCard     UserVipCard? @relation(fields: [fkUserVipCardId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "vip_recharge_log_ibfk_1")
 
-  @@index([fk_service_item_id], map: "fk_service_item_id")
+  @@index([fkUserVipCardId], map: "fkUserVipCardId")
+  @@map("vip_recharge_log")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model VipTimesCard {
+  id              Int            @id @default(autoincrement()) @db.UnsignedInt
+  fkServiceItemId Int            @map("fk_serviceItem_id") @db.UnsignedInt
+  description     String?        @db.VarChar(255)
+  times           Int?           @default(0) @db.UnsignedTinyInt
+  createdBy       String?        @map("created_by") @db.VarChar(32)
+  updatedBy       String?        @map("updated_by") @db.VarChar(32)
+  createTime      DateTime?      @default(now()) @map("create_time") @db.DateTime(0)
+  updateTime      DateTime?      @default(now()) @map("update_time") @db.DateTime(0)
+  isDeleted       Int?           @map("is_deleted") @db.UnsignedTinyInt
+  userOrderVip    UserOrderVip[]
+  userVipCard     UserVipCard[]
+  serviceItem     ServiceItem    @relation(fields: [fkServiceItemId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "vip_times_card_ibfk_1")
+
+  @@index([fkServiceItemId], map: "fkServiceItemId")
+  @@map("vip_times_card")
 }
