@@ -6,16 +6,16 @@ const registerAdmin: FastifyPluginAsync = async fastify => {
   fastify.get<{
     Querystring: QueryPagination & ParseSchemaQuery<typeof fastify.prisma.user.fields>
   }>('/getUserListPage', async function (request, reply) {
-    const queryParams = defaults.queryPaginationDefaults
+    const body = { ...request.query, ...defaults.queryPaginationDefaults }
 
     const sqlData = await Promise.all([
-      fastify.prisma.$queryRaw<unknown[]>`select * FROM user LIMIT ${ queryParams.size }, ${ (queryParams.page - 1) * queryParams.size }`,
-      fastify.prisma.$queryRaw<{ total: number }>`select COUNT(*) AS total FROM user`,
+      fastify.prisma.$queryRaw<unknown[]>`select * FROM user LIMIT ${ body.size } OFFSET ${ (body.page - 1) * body.size }`,
+      fastify.prisma.user.count(),
     ])
 
     return {
       list: sqlData[0],
-      total: sqlData[1].total,
+      total: sqlData[1],
     }
   })
 
