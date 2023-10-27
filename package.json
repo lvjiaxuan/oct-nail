@@ -28,6 +28,7 @@
     "fastify": "^4.24.3",
     "fastify-cli": "^5.8.0",
     "fastify-plugin": "^4.5.1",
+    "lodash": "^4.17.21",
     "prisma": "^5.5.2"
   },
   "devDependencies": {
