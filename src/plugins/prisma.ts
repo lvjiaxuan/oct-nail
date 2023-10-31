@@ -1,40 +1,51 @@
-import camelCase from 'lodash/camelCase'
-import fp from 'fastify-plugin'
 import { PrismaClient } from '@prisma/client'
+import { camelCase } from 'lodash-es'
+import fp from 'fastify-plugin'
 
 // Use TypeScript module augmentation to declare the type of server.prisma to be PrismaClient
 declare module 'fastify' {
   interface FastifyInstance {
-    prisma: PrismaClient
+    prisma: typeof prisma,
   }
 }
 
-export default fp(async (server, options) => {
-  const prisma = new PrismaClient()
+const prisma = new PrismaClient().$extends({
+  client: {
+    // @ts-ignore promise
+    async $$queryRaw <T = unknown>(...args: Parameters<$queryRawType>): ReturnType<$queryRawType<T>> {
+      // to camelCase
+      const result = await prisma.$queryRaw<T>(...args)
 
-  type $queryRawType = typeof prisma.$queryRaw
-  prisma.$extends({
-    name: 'camelCase',
-    client: {
-      // @ts-ignore promise
-      async $$queryRaw <T = unknown>(...args: Parameters<$queryRawType>): ReturnType<$queryRawType> {
-        // to camelCase
-        const result = prisma.$queryRaw<T>(...args)
+      if (Array.isArray(result) && result.length) {
+        type ItemT = T extends unknown[] ? T[number] : never
 
-        if (Array.isArray(result) && result.length) {
-          const map = new Map<string, string>()
-          if (typeof result[0] === 'object') {
-            for (const key of result[0]) {
-              map.set(key as string, camelCase(key as string))
-            }
+        // collect keys
+        const map = new Map<string, string>()
+        if (typeof result[0] === 'object') {
+          for (const key in result[0]) {
+            map.set(key, camelCase(key))
           }
         }
 
-        return result
-      },
-    },
-  })
+        return result.map((i: ItemT) => {
+          const pure = Object.create(null) as ItemT
+          map.forEach((value, key) => {
+            /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+            // @ts-ignore ts shit
+            pure[value] = i[key]
+            /* eslint-enable @typescript-eslint/no-unsafe-assignment */
+          })
+          return pure
+        })
+      }
 
+      return result
+    },
+  },
+})
+
+export default fp(async (server, options) => {
+  // type $queryRawType = typeof prisma.$queryRaw
 
   await prisma.$connect()
 

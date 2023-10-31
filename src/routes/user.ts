@@ -9,7 +9,7 @@ const registerAdmin: FastifyPluginAsync = async fastify => {
     const body = { ...request.query, ...defaults.queryPaginationDefaults }
 
     const sqlData = await Promise.all([
-      fastify.prisma.$queryRaw<unknown[]>`select * FROM user LIMIT ${ body.size } OFFSET ${ (body.page - 1) * body.size }`,
+      fastify.prisma.$$queryRaw<unknown[]>`select * FROM user LIMIT ${ body.size } OFFSET ${ (body.page - 1) * body.size }`,
       fastify.prisma.user.count(),
     ])
 
