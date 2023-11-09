@@ -1,4 +1,6 @@
 export const queryPaginationDefaults: QueryPagination = {
-  page: 1,
-  size: 10,
+  pagination: {
+    page: 1,
+    size: 10,
+  },
 }

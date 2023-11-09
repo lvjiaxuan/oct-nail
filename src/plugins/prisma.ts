@@ -9,10 +9,12 @@ declare module 'fastify' {
   }
 }
 
+type $QueryRawType = PrismaClient['$queryRaw']
+
 const prisma = new PrismaClient().$extends({
   client: {
-    // @ts-ignore promise
-    async $$queryRaw <T = unknown>(...args: Parameters<$queryRawType>): ReturnType<$queryRawType<T>> {
+    // @ts-ignore `Prisma.PrismaPromise<T>`
+    async $$queryRaw <T = unknown>(...args: Parameters<$QueryRawType>): Promise<T> {
       // to camelCase
       const result = await prisma.$queryRaw<T>(...args)
 
@@ -36,7 +38,7 @@ const prisma = new PrismaClient().$extends({
             /* eslint-enable @typescript-eslint/no-unsafe-assignment */
           })
           return pure
-        })
+        }) as T
       }
 
       return result
@@ -45,7 +47,6 @@ const prisma = new PrismaClient().$extends({
 })
 
 export default fp(async (server, options) => {
-  // type $queryRawType = typeof prisma.$queryRaw
 
   await prisma.$connect()
 

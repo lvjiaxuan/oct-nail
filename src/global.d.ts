@@ -1,10 +1,13 @@
-type QueryPagination = {
-  size: number;
-  page: number;
+type QueryPagination<T = unknown> = T & {
+  pagination: {
+    size: number;
+    page: number;
+  };
 }
 
-type ReturnPagination = {
+type ReturnPagination<T> = {
   total: number;
+  list: T[];
 }
 
-type ParseSchemaQuery<T extends object> = Partial<Omit<T, 'is_deleted' | 'update_time' | 'create_time' | 'updated_by' | 'created_by'>>
+type Fastify = Parameters<import('fastify').FastifyPluginAsync>[0]

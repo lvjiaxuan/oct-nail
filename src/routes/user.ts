@@ -1,15 +1,19 @@
 import * as defaults from '~/defaults.js'
-import type { FastifyPluginAsync } from 'fastify'
+import { type FastifyPluginAsync } from 'fastify'
+
+type UserFields = Fastify['prisma']['user']['fields']
 
 const registerAdmin: FastifyPluginAsync = async fastify => {
 
   fastify.get<{
-    Querystring: QueryPagination & ParseSchemaQuery<typeof fastify.prisma.user.fields>
+    Querystring: QueryPagination<UserFields>,
+    Reply: ReturnPagination<UserFields>
   }>('/getUserListPage', async function (request, reply) {
-    const body = { ...request.query, ...defaults.queryPaginationDefaults }
+    const body = { ...defaults.queryPaginationDefaults, ...request.query }
+
 
     const sqlData = await Promise.all([
-      fastify.prisma.$$queryRaw<unknown[]>`select * FROM user LIMIT ${ body.size } OFFSET ${ (body.page - 1) * body.size }`,
+      fastify.prisma.$$queryRaw<UserFields[]>`select * FROM user LIMIT ${ body.pagination.size } OFFSET ${ (body.pagination.page - 1) * body.pagination.size }`,
       fastify.prisma.user.count(),
     ])
 
