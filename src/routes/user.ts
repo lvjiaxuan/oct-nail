@@ -8,7 +8,7 @@ const registerAdmin: FastifyPluginAsync = async fastify => {
   fastify.get<{
     Querystring: QueryPagination<UserFields>,
     Reply: ReturnPagination<UserFields>
-  }>('/getUserListPage', async function (request, reply) {
+  }>('/getUserListPage', async (request, reply) => {
     const body = { ...defaults.queryPaginationDefaults, ...request.query }
 
 
@@ -23,6 +23,11 @@ const registerAdmin: FastifyPluginAsync = async fastify => {
     }
   })
 
+  fastify.get<{
+    Querystring: { id: string }
+  }>('/findUserById', async (request, reply) => {
+    // ...
+  })
 }
 
 const registerApp: FastifyPluginAsync = async fastify => {
