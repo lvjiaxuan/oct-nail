@@ -1,9 +1,34 @@
 import * as defaults from '~/defaults.js'
 import { type FastifyPluginAsync } from 'fastify'
+import { Prisma } from '@prisma/client'
 
 type UserFields = Fastify['prisma']['user']['fields']
 
-const registerAdmin: FastifyPluginAsync = async fastify => {
+export default (async (fastify, opts) => {
+
+  const prismaUser = fastify.prisma.user
+
+  fastify.post<{
+    Body: Prisma.UserCreateInput
+  }>('/addUser', async (request, reply) => {
+    await prismaUser.create({ data: request.body })
+  })
+
+  fastify.post<{
+    Body: Prisma.UserUncheckedUpdateInput
+  }>('/updateUserById', async (request, reply) => {
+
+    await prismaUser.update({
+      where: { id: +request.body.id! },
+      data: request.body,
+    })
+  })
+
+  fastify.get<{
+    Querystring: { id: string },
+  }>('/findUserById', (request, reply) =>
+    prismaUser.findUniqueOrThrow({ where: { id: +request.query.id } }),
+  )
 
   fastify.get<{
     Querystring: QueryPagination<UserFields>,
@@ -11,10 +36,9 @@ const registerAdmin: FastifyPluginAsync = async fastify => {
   }>('/getUserListPage', async (request, reply) => {
     const body = { ...defaults.queryPaginationDefaults, ...request.query }
 
-
     const sqlData = await Promise.all([
-      fastify.prisma.$$queryRaw<UserFields[]>`select * FROM user LIMIT ${ body.pagination.size } OFFSET ${ (body.pagination.page - 1) * body.pagination.size }`,
-      fastify.prisma.user.count(),
+      fastify.prisma.$queryRaw<UserFields[]>`select * FROM user LIMIT ${ body.pagination.size } OFFSET ${ (body.pagination.page - 1) * body.pagination.size }`,
+      prismaUser.count(),
     ])
 
     return {
@@ -22,19 +46,4 @@ const registerAdmin: FastifyPluginAsync = async fastify => {
       total: sqlData[1],
     }
   })
-
-  fastify.get<{
-    Querystring: { id: string }
-  }>('/findUserById', async (request, reply) => {
-    // ...
-  })
-}
-
-const registerApp: FastifyPluginAsync = async fastify => {
-  // ...
-}
-
-export default (async (fastify, opts) => {
-  void fastify.register(registerAdmin, { prefix: '/admin' })
-  void fastify.register(registerApp, { prefix: '/app' })
 }) as FastifyPluginAsync
