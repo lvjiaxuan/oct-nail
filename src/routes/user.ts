@@ -11,6 +11,7 @@ export default (async (fastify, opts) => {
   fastify.post<{
     Body: Prisma.UserCreateInput
   }>('/addUser', async (request, reply) => {
+    const res = Prisma.validator<Prisma.UserCreateInput>()(request.body)
     await prismaUser.create({ data: request.body })
   })
 

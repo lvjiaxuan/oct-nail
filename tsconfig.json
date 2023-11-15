@@ -9,6 +9,6 @@
     "sourceMap": true,
     "outDir": "dist"
   },
-  "include": ["src/**/*.ts", "src/**/*.d.ts"],
+  "include": ["src/**/*.ts", "src/**/*.d.ts", "*.config.ts"],
   "exclude": ["test/**/*.ts"]
 }
