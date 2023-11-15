@@ -2,8 +2,6 @@ import * as defaults from '~/defaults.js'
 import { type FastifyPluginAsync } from 'fastify'
 import { Prisma } from '@prisma/client'
 
-type UserFields = Fastify['prisma']['user']['fields']
-
 export default (async (fastify, opts) => {
 
   const prismaUser = fastify.prisma.user
@@ -11,7 +9,6 @@ export default (async (fastify, opts) => {
   fastify.post<{
     Body: Prisma.UserCreateInput
   }>('/addUser', async (request, reply) => {
-    const res = Prisma.validator<Prisma.UserCreateInput>()(request.body)
     await prismaUser.create({ data: request.body })
   })
 
@@ -26,19 +23,21 @@ export default (async (fastify, opts) => {
   })
 
   fastify.get<{
-    Querystring: { id: string },
+    Querystring: Pick<Prisma.UserFieldRefs, 'id'>,
   }>('/findUserById', (request, reply) =>
     prismaUser.findUniqueOrThrow({ where: { id: +request.query.id } }),
   )
 
   fastify.get<{
-    Querystring: QueryPagination<UserFields>,
-    Reply: ReturnPagination<UserFields>
+    Querystring: QueryPagination<Prisma.UserSelect>,
   }>('/getUserListPage', async (request, reply) => {
     const body = { ...defaults.queryPaginationDefaults, ...request.query }
 
     const sqlData = await Promise.all([
-      fastify.prisma.$queryRaw<UserFields[]>`select * FROM user LIMIT ${ body.pagination.size } OFFSET ${ (body.pagination.page - 1) * body.pagination.size }`,
+      prismaUser.findMany({
+        skip: body.pagination.size * (body.pagination.page - 1),
+        take: body.pagination.size,
+      }),
       prismaUser.count(),
     ])
 

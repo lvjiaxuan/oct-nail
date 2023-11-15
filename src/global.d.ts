@@ -7,7 +7,7 @@ type QueryPagination<T = unknown> = T & {
 
 type ReturnPagination<T> = {
   total: number;
-  list: T[];
+  list: T extends unknown[] ? T : T[];
 }
 
 type Fastify = Parameters<import('fastify').FastifyPluginAsync>[0]
